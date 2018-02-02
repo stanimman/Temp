@@ -30,21 +30,25 @@ best_svm = None # The LinearSVM object that achieved the highest validation rate
 # code with a larger value for num_iters.                                      #
 ################################################################################
 
-for i in xrange(learning_rates.shape)
-	for j in xrange (regularization_strength.shape)
+for i in xrange(learning_rates.shape):
+	for j in xrange (regularization_strength.shape):
 
 	svm = LinearSVM()
-	loss_hist = svm.train(X_train, y_train, learning_rate=learning_rates[i], reg=regularization_strength[j],
+	loss_hist = svm.train(X_train, y_train, i, reg=j
                       num_iters=1500, verbose=True)
 					  
 	y_val_pred = svm.predict(X_val)
+	y_train_pred = svm.predict(X_train)
 	
-	accuracy = (np.mean(y_val == y_val_pred), )
+	Val_accuracy = (np.mean(y_val == y_val_pred), )
+	Train_accuracy = (np.mean(y_train == y_train_pred), )
 	
 	if j == 0
 		best_val = accuracy
+		best_svm = svm 
+		result {[learning_rate[i], regularization_strength[j]]:[y_train_pred,y_val_pred]}
 	
 	if best_val < accuracy
 		best_val = accuracy
 		best_svm = svm 
-		result {[]:][]}
+	results {[i,j]]:[Train_accuracy,Val_accuracy]}
