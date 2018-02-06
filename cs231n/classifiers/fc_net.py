@@ -46,9 +46,9 @@ class TwoLayerNet(object):
     # and biases using the keys 'W2' and 'b2'.                                 #
     ############################################################################
     W1 = np.random.normal(0,weight_scale ,(np.prod(input_dim),hidden_dim))
-    b1 = np.random.randn(hidden_dim)
+    b1 = np.zeros(hidden_dim)
     W1 = np.random.normal(0,weight_scale ,(hidden_dim,num_classes))
-    b2 = np.random.randn(num_classes)
+    b2 = np.zeros(num_classes)
     pass
     ############################################################################
     #                             END OF YOUR CODE                             #
