@@ -75,10 +75,14 @@ class TwoLayerNet(object):
       names to gradients of the loss with respect to those parameters.
     """  
     scores = None
+    f = lambda x : np.maximum(0,x)
     ############################################################################
     # TODO: Implement the forward pass for the two-layer net, computing the    #
     # class scores for X and storing them in the scores variable.              #
     ############################################################################
+    h1 = np.dot(X,self.params['W1']) + self.params['b1']
+    relu = f(h1)
+    scores = np.dot(relu,self.params['W2') + self.params['b2']
     pass
     ############################################################################
     #                             END OF YOUR CODE                             #
@@ -99,6 +103,15 @@ class TwoLayerNet(object):
     # automated tests, make sure that your L2 regularization includes a factor #
     # of 0.5 to simplify the expression for the gradient.                      #
     ############################################################################
+    exp_scores = np.exp(scores)
+    sum_exp_scores = exp_scores.sum(axis=1)
+    sum_exp_scores_stretch = np.tile(sum_exp_scores,(exp_scores.shape[1],1))
+    prob_scores = exp_scores / sum_exp_scores_stretch.T
+    prob_scores_correct_class = prob_scores[[range(X.shape[0]),y]]
+    log_prob_scores_correct_class = np.log(prob_scores_correct_class)                                 
+    loss = np.sum(np.multiply((log_prob_scores_correct_class),-1))                                
+    loss = loss / X.shape[0]
+    loss = 0.5 * self.reg * (np.sum(W1*W1) + np.sum (W2*W2))                                  
     pass
     ############################################################################
     #                             END OF YOUR CODE                             #
