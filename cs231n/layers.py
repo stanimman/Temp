@@ -174,6 +174,18 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # the momentum variable to update the running mean and running variance,    #
     # storing your result in the running_mean and running_var variables.        #
     #############################################################################
+    sample_mean_mat = X.mean(axis=0)
+    mean_mat_stretch = np.tile(mean_mat,(X.shape[0],1)
+    sample_variance_mat = X.var(axis=0)
+    variance_mat_stretch = np.tile(variance_mat_stretch,(X.shape[0],1)
+    Batch_norm = ( X - mean_mat_stretch ) / variance_mat_stretch
+    gamma_stretch = np.tile(gamma,(X.shape[0],1)
+    beta_stretch = np.tile(beta,(X.shape[0],1)                        
+    out = gamma*batch_norm + beta_stretch                                   
+    
+    # Finding running mean and running variance                        
+    running_mean = bn_param['momentum'] * bn_param['running_mean'] + (1 - bn_param['momentum']) * sample_mean_mat
+    running_var = bn_param['momentum'] * bn_param['running_var'] + (1 - bn_param['momentum']) * sample_var_mat
     pass
     #############################################################################
     #                             END OF YOUR CODE                              #
