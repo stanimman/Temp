@@ -197,6 +197,12 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # and shift the normalized data using gamma and beta. Store the result in   #
     # the out variable.                                                         #
     #############################################################################
+    mean_mat_stretch = np.tile(running_mean,(X.shape[0],1)
+    variance_mat_stretch = np.tile(running_mean,(X.shape[0],1)                           
+    Batch_norm = ( X - mean_mat_stretch ) / variance_mat_stretch
+    gamma_stretch = np.tile(gamma,(X.shape[0],1)
+    beta_stretch = np.tile(beta,(X.shape[0],1)                        
+    out = gamma*batch_norm + beta_stretch                           
     pass
     #############################################################################
     #                             END OF YOUR CODE                              #
