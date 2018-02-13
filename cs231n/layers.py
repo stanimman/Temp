@@ -375,12 +375,13 @@ def dropout_backward(dout, cache):
   """
   dropout_param, mask = cache
   mode = dropout_param['mode']
-  
+  p = dropout_param['p']
   dx = None
   if mode == 'train':
     ###########################################################################
     # TODO: Implement the training phase backward pass for inverted dropout.  #
     ###########################################################################
+    dx  = dout * mask
     pass
     ###########################################################################
     #                            END OF YOUR CODE                             #
