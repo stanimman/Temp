@@ -174,14 +174,21 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # the momentum variable to update the running mean and running variance,    #
     # storing your result in the running_mean and running_var variables.        #
     #############################################################################
-    sample_mean_mat = X.mean(axis=0)
-    mean_mat_stretch = np.tile(mean_mat,(X.shape[0],1)
-    sample_variance_mat = X.var(axis=0)
-    variance_mat_stretch = np.tile(variance_mat_stretch,(X.shape[0],1)
-    Batch_norm = ( X - mean_mat_stretch ) / variance_mat_stretch
-    gamma_stretch = np.tile(gamma,(X.shape[0],1)
-    beta_stretch = np.tile(beta,(X.shape[0],1)                        
-    out = gamma*batch_norm + beta_stretch                                   
+    sample_mean_mat = np.mean(X,axis=0)
+    #mean_mat_stretch = np.tile(sample_mean_mat,(X.shape[0],1)
+    #sq = xmu ** 2
+    #sample_variance_mat = 1./N * np.sum(sq, axis = 0)
+    sample_variance_mat = np.var(X,axis=0,dtype=np.float64)
+    sample_sd_mat = np.sqrt(sample_variance_mat + eps)
+    inv_varx = 1./sample_sd_mat # Seperating out as they are required in backprop
+    #variance_mat_stretch = np.tile(variance_mat_stretch,(X.shape[0],1)
+    Num = ( X - sample_mean_mat ) #Seperating out as they are required backprop
+    batch_norm =  Num / sample_sd_mat
+    #gamma_stretch = np.tile(gamma,(X.shape[0],1)
+    #beta_stretch = np.tile(beta,(X.shape[0],1)                        
+    out = gamma*batch_norm + beta  
+    #print(out1)
+        
     
     # Finding running mean and running variance                        
     running_mean = bn_param['momentum'] * bn_param['running_mean'] + (1 - bn_param['momentum']) * sample_mean_mat
@@ -197,12 +204,21 @@ def batchnorm_forward(x, gamma, beta, bn_param):
     # and shift the normalized data using gamma and beta. Store the result in   #
     # the out variable.                                                         #
     #############################################################################
-    mean_mat_stretch = np.tile(running_mean,(X.shape[0],1)
-    variance_mat_stretch = np.tile(running_mean,(X.shape[0],1)                           
-    Batch_norm = ( X - mean_mat_stretch ) / variance_mat_stretch
-    gamma_stretch = np.tile(gamma,(X.shape[0],1)
-    beta_stretch = np.tile(beta,(X.shape[0],1)                        
-    out = gamma*batch_norm + beta_stretch                           
+    sample_mean_mat = np.mean(X,axis=0)
+    #mean_mat_stretch = np.tile(sample_mean_mat,(X.shape[0],1)
+    #sq = xmu ** 2
+    #sample_variance_mat = 1./N * np.sum(sq, axis = 0)
+    sample_variance_mat = np.var(X,axis=0,dtype=np.float64)
+    sample_sd_mat = np.sqrt(sample_variance_mat + eps)
+    inv_varx = 1./sample_sd_mat # Seperating out as they are required in backprop
+    #variance_mat_stretch = np.tile(variance_mat_stretch,(X.shape[0],1)
+    Num = ( X - sample_mean_mat ) #Seperating out as they are required backprop
+    batch_norm =  Num / sample_sd_mat
+    #gamma_stretch = np.tile(gamma,(X.shape[0],1)
+    #beta_stretch = np.tile(beta,(X.shape[0],1)                        
+    out = gamma*batch_norm + beta  
+    #print(out1)
+                          
     pass
     #############################################################################
     #                             END OF YOUR CODE                              #
@@ -213,7 +229,7 @@ def batchnorm_forward(x, gamma, beta, bn_param):
   # Store the updated running means back into bn_param
   bn_param['running_mean'] = running_mean
   bn_param['running_var'] = running_var
-
+  cache = (gamma,Num,inv_varx,sample_variance_mat,batch_norm)
   return out, cache
 
 
@@ -239,6 +255,24 @@ def batchnorm_backward(dout, cache):
   # TODO: Implement the backward pass for batch normalization. Store the      #
   # results in the dx, dgamma, and dbeta variables.                           #
   #############################################################################
+  dbeta = np.sum(dout, axis=0)
+  dgamma = np.sum((batch_norm * dout), axis = 0)
+  N,D = dout.shape
+  dx1 = dout * gamma * inv_varx
+  #dx2 = -1. * 1./N * dx1 
+  dvar = dout * gamma * Num 
+
+  dx2 = np.sum(dvar, axis = 0)
+  dx2 = (-1) / (sample_variance_mat + eps) * dx2
+
+  dx2 = 1. /N * np.ones((N,D)) * 2 * Num * 0.5 * (1. / np.sqrt(sample_variance_mat+eps))* dx2
+
+  #print(dx2)
+  #dx4 = -1. * 1./N * dx3
+  dx = dx1 + dx2
+  A = np.sum(dx, axis = 0) / N
+  A = A * np.ones(X.shape)
+  dx -= A
   pass
   #############################################################################
   #                             END OF YOUR CODE                              #
